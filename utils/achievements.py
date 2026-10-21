@@ -59,7 +59,13 @@ def calculate_achievements(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     # 4. Rising Developer - Rapid increase in commits or repos
     # Check commits in last 30 days
     contributions = data.get("contributions", [])
-    recent_commits = sum(c.get("count", 0) for c in contributions[-30:]) if contributions else 0
+    recent_commits = sum(
+    c.get("count", 0) if isinstance(c, dict) else c
+    for c in contributions[-30:]
+    if isinstance(c, (dict, int)) and not isinstance(c, bool)
+) if isinstance(contributions, list) else 0
+
+
     
     achievements.append({
         "id": "rising_developer",
